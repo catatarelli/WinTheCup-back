@@ -4,7 +4,7 @@ import chalk from "chalk";
 import { mongo } from "mongoose";
 import { mongoUrl, port } from "./loadEnvironments.js";
 import startServer from "./server/startServer.js";
-import connectDatabase from "./server/database/connectDatabase.js";
+import connectDatabase from "./database/connectDatabase.js";
 
 const debug = debugCreator("users:root");
 
