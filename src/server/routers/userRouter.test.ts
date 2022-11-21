@@ -34,7 +34,7 @@ describe("Given a POST /user/register endpoint", () => {
       const expectedStatus = 201;
 
       const response = await request(app)
-        .post("/users/register/")
+        .post("/user/register/")
         .send(registerData)
         .expect(expectedStatus);
 
@@ -49,7 +49,7 @@ describe("Given a POST /user/register endpoint", () => {
       await User.create(registerData);
 
       const response = await request(app)
-        .post("/users/register/")
+        .post("/user/register/")
         .send(registerData)
         .expect(expectedStatus);
 
