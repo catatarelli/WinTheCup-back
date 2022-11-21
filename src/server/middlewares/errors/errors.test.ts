@@ -1,6 +1,6 @@
 import type { Response } from "express";
-import CustomError from "../../CustomError/CustomError";
-import CustomErrorExpressTest from "../../CustomError/CutomErrorExpressTest";
+import CustomError from "../../../CustomError/CustomError";
+import CustomErrorExpressTest from "../../../CustomError/CutomErrorExpressTest";
 import { generalError, unknownEndpoint } from "./errors";
 
 const res: Partial<Response> = {

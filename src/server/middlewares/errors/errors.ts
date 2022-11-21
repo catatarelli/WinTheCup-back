@@ -2,7 +2,7 @@ import chalk from "chalk";
 import debug from "debug";
 import type { NextFunction, Request, Response } from "express";
 import { ValidationError } from "express-validation";
-import type CustomError from "../../CustomError/CustomError.js";
+import type CustomError from "../../../CustomError/CustomError.js";
 
 export const unknownEndpoint = (req: Request, res: Response) => {
   res.status(404).json({ message: "Unknown endpoint" });
