@@ -2,8 +2,9 @@ import "./loadEnvironments.js";
 import debugCreator from "debug";
 import chalk from "chalk";
 import { mongo } from "mongoose";
-import { port } from "./loadEnvironments.js";
+import { mongoUrl, port } from "./loadEnvironments.js";
 import startServer from "./server/startServer.js";
+import connectDatabase from "./server/database/connectDatabase.js";
 
 const debug = debugCreator("users:root");
 
@@ -13,6 +14,8 @@ const { MongoServerError } = mongo;
 try {
   await startServer(+port);
   debug(chalk.blue(`Server listening on port ${port}`));
+  await connectDatabase(mongoUrl);
+  debug(chalk.blue("Connected to database"));
 } catch (error: unknown) {
   if (error instanceof MongoServerError) {
     debug(
