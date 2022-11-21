@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import { generalError, unknownEndpoint } from "./middlewares/errors/errors";
+import { generalError, unknownEndpoint } from "./middlewares/errors/errors.js";
 
 const app = express();
 
