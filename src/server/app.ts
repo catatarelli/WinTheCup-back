@@ -13,7 +13,7 @@ app.use(morgan("dev"));
 
 app.use(express.json());
 
-app.use("/users", userRouter);
+app.use("/user", userRouter);
 
 app.use(unknownEndpoint);
 app.use(generalError);
