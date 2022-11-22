@@ -1,7 +1,6 @@
 import { model, Schema } from "mongoose";
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const UserSchema = new Schema({
+const userSchema = new Schema({
   username: {
     type: String,
     required: true,
@@ -18,7 +17,6 @@ const UserSchema = new Schema({
   },
 });
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const User = model("User", UserSchema, "users");
+const User = model("User", userSchema, "users");
 
 export default User;
