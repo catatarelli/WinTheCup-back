@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const connectDatabase = async (mongoUrl: string) => {
-  await mongoose.connect(mongoUrl, { dbName: "socialNetwork" });
+  await mongoose.connect(mongoUrl, { dbName: "winTheCup" });
 
   mongoose.set("toJSON", {
     virtuals: true,
