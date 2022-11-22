@@ -1,9 +1,11 @@
-PUBLIC ENDPOINTS
+# PUBLIC ENDPOINTS
+
 [POST] /user/register -> Allows to create a new user in the database
 
 [POST] /user/login -> Responds with a token when the user is in the database
 
-ENDPOINTS WITH TOKEN
+# ENDPOINTS WITH TOKEN
+
 [GET] /predictions -> Responds with a list of predictions of the logged user.
 
 [GET] /predictions/:id -> Responds with the prediction that corresponds with the received id.
