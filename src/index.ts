@@ -1,8 +1,7 @@
-import "./loadEnvironments.js";
+import { mongoUrl, port } from "./loadEnvironments.js";
 import debugCreator from "debug";
 import chalk from "chalk";
 import { mongo } from "mongoose";
-import { mongoUrl, port } from "./loadEnvironments.js";
 import startServer from "./server/startServer.js";
 import connectDatabase from "./database/connectDatabase.js";
 
