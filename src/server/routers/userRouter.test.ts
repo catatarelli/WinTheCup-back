@@ -1,6 +1,7 @@
 import "../../loadEnvironments";
 import request from "supertest";
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import connectDatabase from "../../database/connectDatabase.js";
 import User from "../../database/models/User.js";
@@ -57,6 +58,73 @@ describe("Given a POST /user/register endpoint", () => {
         "error",
         "Error creating a new user"
       );
+    });
+  });
+});
+
+describe("Given a POST /users/login endpoint", () => {
+  const loginData = {
+    username: "panchito",
+    password: "panchito123",
+  };
+
+  describe("When it receives a request with username 'panchito' password 'panchito123' and it exists in the database", () => {
+    test("Then it should respond with a response status 200 and the token", async () => {
+      const expectedStatus = 200;
+
+      const hashedPassword = await bcrypt.hash(registerData.password, 10);
+
+      await User.create({
+        username: registerData.username,
+        password: hashedPassword,
+        email: registerData.email,
+      });
+
+      const response = await request(app)
+        .post("/user/login/")
+        .send(loginData)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("token");
+    });
+  });
+
+  describe("When it receives a request with username 'panchito' password 'panchito123' and it doesn't exists in the database", () => {
+    test("Then it should respond with a response status 401 and the message 'Wrong credentials'", async () => {
+      const expectedStatus = 401;
+
+      const response = await request(app)
+        .post("/user/login/")
+        .send(loginData)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error", "Wrong credentials");
+    });
+  });
+
+  describe("When it receives a request with username 'panchito' password 'panchito456' and the password is incorrect", () => {
+    test("Then it should respond with a response status 401 and the message 'Wrong credentials'", async () => {
+      const expectedStatus = 401;
+
+      const hashedPassword = await bcrypt.hash(registerData.password, 10);
+
+      await User.create({
+        username: registerData.username,
+        password: hashedPassword,
+        email: registerData.email,
+      });
+
+      const wrongLoginData = {
+        username: "panchito",
+        password: "panchito456",
+      };
+
+      const response = await request(app)
+        .post("/user/login/")
+        .send(wrongLoginData)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error", "Wrong credentials");
     });
   });
 });
