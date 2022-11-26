@@ -1,4 +1,5 @@
 import { model, Schema } from "mongoose";
+import type { InferSchemaType } from "mongoose";
 
 const predictionSchema = new Schema({
   match: {
@@ -46,5 +47,7 @@ const userSchema = new Schema({
 });
 
 const User = model("User", userSchema, "users");
+
+export type PredictionStructure = InferSchemaType<typeof predictionSchema>;
 
 export default User;
