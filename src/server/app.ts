@@ -2,7 +2,9 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import { generalError, unknownEndpoint } from "./middlewares/errors/errors.js";
-import userRouter from "./routers/userRouter.js";
+import userRouter from "./routers/userRouter/userRouter.js";
+import predictionsRouter from "./routers/predictionsRouter/predictionsRouter.js";
+import { auth } from "./middlewares/auth/auth.js";
 
 const app = express();
 
@@ -14,6 +16,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use("/user", userRouter);
+app.use("/predictions", auth, predictionsRouter);
 
 app.use(unknownEndpoint);
 app.use(generalError);
