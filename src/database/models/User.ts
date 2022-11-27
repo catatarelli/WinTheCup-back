@@ -1,9 +1,10 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import type { InferSchemaType } from "mongoose";
 
 const predictionSchema = new Schema({
   match: {
     type: String,
+    unique: true,
   },
   goalsTeam1: {
     type: Number,
@@ -25,6 +26,10 @@ const predictionSchema = new Schema({
   },
   backupPicure: {
     type: String,
+  },
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true,
   },
 });
 
@@ -49,5 +54,6 @@ const userSchema = new Schema({
 const User = model("User", userSchema, "users");
 
 export type PredictionStructure = InferSchemaType<typeof predictionSchema>;
+export type UserStructure = InferSchemaType<typeof userSchema>;
 
 export default User;

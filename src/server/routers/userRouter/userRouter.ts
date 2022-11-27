@@ -5,16 +5,19 @@ import {
   loginUser,
   registerUser,
 } from "../../controllers/userControllers/userControllers.js";
+import routes from "../routes.js";
+
+const { registerRoute, loginRoute } = routes;
 
 // eslint-disable-next-line new-cap
 const userRouter = express.Router();
 
 userRouter.post(
-  "/register",
+  registerRoute,
   validate(userRegisterDataSchema, {}, { abortEarly: false }),
   registerUser
 );
 
-userRouter.post("/login", loginUser);
+userRouter.post(loginRoute, loginUser);
 
 export default userRouter;
