@@ -1,13 +1,14 @@
 import type { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
-import CustomError from "../../../CustomError/CustomError.js";
-import type { CustomRequest, UserTokenPayload } from "../../../types/types.js";
+import CustomError from "../../../CustomError/CustomError";
+import { secretWord } from "../../../loadEnvironments";
+import type { CustomRequest, UserTokenPayload } from "../../../types/types";
 
 export const auth = (req: CustomRequest, res: Response, next: NextFunction) => {
   try {
-    const authHeader = req.header("Authorization");
+    const authorizationHeader = req.header("Authorization");
 
-    if (!authHeader) {
+    if (!authorizationHeader) {
       const error = new CustomError(
         "Authorization header missing",
         401,
@@ -17,22 +18,19 @@ export const auth = (req: CustomRequest, res: Response, next: NextFunction) => {
       return;
     }
 
-    if (!authHeader.startsWith("Bearer ")) {
+    if (!authorizationHeader.startsWith("Bearer ")) {
       const error = new CustomError(
-        "Missing Bearer in token",
+        "Missing bearer in Authorization header",
         401,
-        "Invalid token"
+        "Missing token"
       );
 
       next(error);
-      return;
     }
 
-    const token = authHeader.replace(/^Bearer \s*/, "");
-    const user: UserTokenPayload = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    ) as UserTokenPayload;
+    const token = authorizationHeader.replace(/^Bearer\s*/, "");
+
+    const user = jwt.verify(token, secretWord) as UserTokenPayload;
 
     req.userId = user.id;
 
