@@ -5,6 +5,9 @@ import { generalError, unknownEndpoint } from "./middlewares/errors/errors.js";
 import userRouter from "./routers/userRouter/userRouter.js";
 import predictionsRouter from "./routers/predictionsRouter/predictionsRouter.js";
 import { auth } from "./middlewares/auth/auth.js";
+import routes from "./routers/routes.js";
+
+const { userRoute, predictionsRoute } = routes;
 
 const app = express();
 
@@ -15,8 +18,8 @@ app.use(morgan("dev"));
 
 app.use(express.json());
 
-app.use("/user", userRouter);
-app.use("/predictions", auth, predictionsRouter);
+app.use(userRoute, userRouter);
+app.use(predictionsRoute, auth, predictionsRouter);
 
 app.use(unknownEndpoint);
 app.use(generalError);
