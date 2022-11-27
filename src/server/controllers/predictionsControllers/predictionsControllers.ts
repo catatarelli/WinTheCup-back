@@ -56,29 +56,27 @@ export const getPredictionById = async (
   }
 };
 
-// Export const createPrediction = async (
-//   req: CustomRequest,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const { userId } = req;
-//   const { match, goalsTeam1, goalsTeam2 } = req.body as PredictionData;
+export const createPrediction = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req;
+  const { match, goalsTeam1, goalsTeam2 } = req.body as PredictionData;
 
-//   try {
-//     const user = await User.findById(userId);
+  try {
+    const user = await User.findById(userId);
+    const prediction = {
+      match,
+      goalsTeam1,
+      goalsTeam2,
+    };
 
-//     const prediction = {
-//       match,
-//       goalsTeam1,
-//       goalsTeam2,
-//     };
+    user.predictions.push(prediction);
+    await user.save();
 
-//     user.predictions.push(prediction);
-
-//     await user.save();
-
-//     res.status(200).json({ prediction });
-//   } catch (error: unknown) {
-//     next(error);
-//   }
-// };
+    res.status(200).json({ prediction });
+  } catch (error: unknown) {
+    next(error);
+  }
+};
