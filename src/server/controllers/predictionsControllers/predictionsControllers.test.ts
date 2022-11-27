@@ -5,9 +5,14 @@ import {
   getRandomPrediction,
   getRandomPredictionsList,
 } from "../../../mocks/predictionsFactory";
+import { repeatedMockPrediction } from "../../../mocks/predictionsMocks";
 import { getRandomUser } from "../../../mocks/userFactory";
 import type { CustomRequest, UserWithIdStructure } from "../../../types/types";
-import { getPredictionById, getPredictions } from "./predictionsControllers";
+import {
+  createPrediction,
+  getPredictionById,
+  getPredictions,
+} from "./predictionsControllers";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -146,16 +151,36 @@ describe("Given a getPredictionById controller", () => {
   });
 });
 
-// Describe("Given a createPrediction controller", () => {
-//   const user = getRandomUser() as UserWithIdStructure;
-//   const userWithPredictions = { ...user, predictions: [mockPrediction] };
+describe("Given a createPrediction controller", () => {
+  const user = getRandomUser() as UserWithIdStructure;
 
-//   const req: Partial<CustomRequest> = {
-//     userId: user._id,
-//     body: userWithPredictions.predictions[0],
-//   };
-//   describe("When it receives a request with a prediction: match 'Mexico vs Poland' goalsTeam1 '2' and goalsTeam2 '1' ", () => {
-//     test("Then it should call the response method status with a 200 and json with the created prediction", async () => {
+  describe("When it receives a request with a prediction: match 'Argentina vs England' and that match is already in the list", () => {
+    const req: Partial<CustomRequest> = {
+      userId: user._id,
+      body: repeatedMockPrediction,
+    };
+
+    test("Then it should call next with an error", async () => {
+      User.findById = jest.fn().mockReturnValue(user);
+
+      await createPrediction(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+});
+
+//   Describe("When it receives a request with a prediction: match 'Mexico vs Poland'", () => {
+//     const req: Partial<CustomRequest> = {
+//       userId: user._id,
+//       body: mockPrediction,
+//     };
+
+//     test.only("Then it should call the response method status with a 200 and json with the prediction created", async () => {
 //       const expectedStatus = 200;
 
 //       User.findById = jest.fn().mockReturnValue(user);
@@ -167,7 +192,7 @@ describe("Given a getPredictionById controller", () => {
 //       );
 
 //       expect(res.status).toHaveBeenCalledWith(expectedStatus);
-//       expect(res.json).toHaveBeenCalledWith(mockPrediction);
+//       expect(res.json).toHaveBeenCalledWith({ mockPrediction });
 //     });
 //   });
 // });
