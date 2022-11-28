@@ -1,15 +1,24 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { secretWord } from "../../../loadEnvironments.js";
 import request from "supertest";
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import connectDatabase from "../../../database/connectDatabase.js";
 import User from "../../../database/models/User.js";
-import type { UserTokenPayload } from "../../../types/types.js";
+import type { UserWithId } from "../../../types/types.js";
 import app from "../../app.js";
+import { getRandomUser } from "../../../mocks/userFactory.js";
+import { getRandomPrediction } from "../../../mocks/predictionsFactory.js";
+import Prediction from "../../../database/models/Prediction.js";
 
 let server: MongoMemoryServer;
+
+const user = getRandomUser() as UserWithId;
+const requestUserToken = jwt.sign(
+  { username: user.username, id: user._id.toString() },
+  secretWord
+);
 
 beforeAll(async () => {
   server = await MongoMemoryServer.create();
@@ -25,37 +34,14 @@ afterAll(async () => {
   await server.stop();
 });
 
-const registerData = {
-  username: "panchito",
-  password: "panchito123",
-  email: "panchito@gmail.com",
-};
-
 describe("Given a GET /predictions endpoint", () => {
-  describe("When it receives a request from a logged in user that is in the database with id 'abc123'", () => {
-    test("Then it should call the response method status with a 200, and a list of predictions", async () => {
+  describe("When it receives a request from a logged in user that is in the database", () => {
+    test("Then it should call the response method status with a 200, and a list of predictions of that user", async () => {
       const expectedStatus = 200;
-
-      const hashedPassword = await bcrypt.hash(registerData.password, 10);
-
-      const newUser = await User.create({
-        username: registerData.username,
-        password: hashedPassword,
-        email: registerData.email,
-      });
-
-      const user = await User.findOne({ username: newUser.username });
-
-      const tokenPayload: UserTokenPayload = {
-        id: user._id.toString(),
-        username: user.username,
-      };
-
-      const token = jwt.sign(tokenPayload, secretWord, { expiresIn: "2d" });
 
       const response = await request(app)
         .get("/predictions")
-        .set("Authorization", `Bearer ${token}`)
+        .set("Authorization", `Bearer ${requestUserToken}`)
         .set("Content-Type", "application/json")
         .expect(expectedStatus);
 
@@ -64,11 +50,48 @@ describe("Given a GET /predictions endpoint", () => {
   });
 
   describe("When it receives a request from a user that is not logged in", () => {
-    test("Then it should call the response method status with a 401", async () => {
+    test("Then it should call the response method status with a 401 and an error", async () => {
       const expectedStatus = 401;
 
       const response = await request(app)
         .get("/predictions")
+        .set("Content-Type", "application/json")
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error");
+    });
+  });
+});
+
+describe("Given a GET /predictions/:predictionId endpoint", () => {
+  describe("When it receives a request from a logged in user with existing prediction id", () => {
+    test("Then it should call the response method status with a 200, and the prediction", async () => {
+      const expectedStatus = 200;
+
+      const prediction = getRandomPrediction();
+
+      const predictionWithOwner = { ...prediction, createdBy: user._id };
+
+      const newPrediction = await Prediction.create(predictionWithOwner);
+
+      const response = await request(app)
+        .get(`/predictions/${newPrediction.id}`)
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .set("Content-Type", "application/json")
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("prediction");
+    });
+  });
+
+  describe("When it receives a request from a logged in user with incorrect prediction id 'abc123'", () => {
+    test("Then it should call the response method status with a 400 and an error", async () => {
+      const expectedStatus = 400;
+      const predictionId = "abc123";
+
+      const response = await request(app)
+        .get(`/predictions/${predictionId}`)
+        .set("Authorization", `Bearer ${requestUserToken}`)
         .set("Content-Type", "application/json")
         .expect(expectedStatus);
 
