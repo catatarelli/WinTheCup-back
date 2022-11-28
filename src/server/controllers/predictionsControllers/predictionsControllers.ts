@@ -1,7 +1,8 @@
 import type { NextFunction, Response } from "express";
 import CustomError from "../../../CustomError/CustomError.js";
-import User from "../../../database/models/User.js";
-import type { CustomRequest, PredictionData } from "../../../types/types.js";
+import type { PredictionStructure } from "../../../database/models/Prediction.js";
+import Prediction from "../../../database/models/Prediction.js";
+import type { CustomRequest } from "../../../types/types.js";
 
 export const getPredictions = async (
   req: CustomRequest,
@@ -10,8 +11,8 @@ export const getPredictions = async (
 ) => {
   const { userId } = req;
   try {
-    const user = await User.findById(userId);
-    res.status(200).json({ predictions: user.predictions });
+    const predictions = await Prediction.find({ createrBy: userId });
+    res.status(200).json({ predictions });
   } catch (error: unknown) {
     const customError = new CustomError(
       (error as Error).message,
@@ -28,14 +29,8 @@ export const getPredictionById = async (
   next: NextFunction
 ) => {
   const { predictionId } = req.params;
-  const { userId } = req;
-
   try {
-    const user = await User.findById(userId);
-
-    const prediction = user.predictions.find(
-      (prediction) => prediction._id.toString() === predictionId
-    );
+    const prediction = await Prediction.findById(predictionId);
 
     if (!prediction) {
       next(
@@ -62,21 +57,25 @@ export const createPrediction = async (
   next: NextFunction
 ) => {
   const { userId } = req;
-  const { match, goalsTeam1, goalsTeam2 } = req.body as PredictionData;
+  const { match, goalsTeam1, goalsTeam2 } = req.body as PredictionStructure;
 
   try {
-    const user = await User.findById(userId);
     const prediction = {
       match,
       goalsTeam1,
       goalsTeam2,
+      createdBy: userId,
     };
 
-    user.predictions.push(prediction);
-    await user.save();
+    const newPrediction = await Prediction.create(prediction);
 
-    res.status(200).json({ prediction });
+    res.status(200).json(newPrediction);
   } catch (error: unknown) {
-    next(error);
+    const customError = new CustomError(
+      (error as Error).message,
+      400,
+      "Error creating the prediction"
+    );
+    next(customError);
   }
 };
