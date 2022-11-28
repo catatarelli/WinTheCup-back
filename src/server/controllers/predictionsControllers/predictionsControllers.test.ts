@@ -93,7 +93,7 @@ describe("Given a getPredictionById controller", () => {
       );
 
       expect(res.status).toHaveBeenCalledWith(expectedStatus);
-      expect(res.json).toHaveBeenCalledWith({ prediction });
+      expect(res.json).toHaveBeenCalledWith(prediction);
     });
   });
 
