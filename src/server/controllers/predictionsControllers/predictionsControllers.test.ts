@@ -13,7 +13,7 @@ import { getRandomUser } from "../../../mocks/userFactory";
 import type {
   CustomRequest,
   PredictionWithId,
-  UserWithIdStructure,
+  UserWithId,
 } from "../../../types/types";
 import {
   createPrediction,
@@ -137,7 +137,7 @@ describe("Given a getPredictionById controller", () => {
 });
 
 describe("Given a createPrediction controller", () => {
-  const user = getRandomUser() as UserWithIdStructure;
+  const user = getRandomUser() as UserWithId;
 
   describe("When it receives a request with a prediction: match 'Argentina vs England' and that match is already in the list", () => {
     const req: Partial<CustomRequest> = {

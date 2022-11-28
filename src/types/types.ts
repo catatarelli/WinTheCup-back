@@ -12,7 +12,7 @@ export interface RegisterData extends UserCredentials {
   email: string;
 }
 
-export interface UserWithIdStructure extends UserStructure {
+export interface UserWithId extends UserStructure {
   _id: string;
 }
 
