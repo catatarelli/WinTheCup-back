@@ -80,7 +80,7 @@ describe("Given a GET /predictions/:predictionId endpoint", () => {
         .set("Content-Type", "application/json")
         .expect(expectedStatus);
 
-      expect(response.body).toHaveProperty("prediction");
+      expect(response.body).toHaveProperty("match");
     });
   });
 

@@ -40,7 +40,7 @@ export const getPredictionById = async (
       return;
     }
 
-    res.status(200).json({ prediction });
+    res.status(200).json(prediction);
   } catch (error: unknown) {
     const customError = new CustomError(
       (error as Error).message,

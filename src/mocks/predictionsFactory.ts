@@ -13,7 +13,6 @@ const predictionFactory = Factory.define<PredictionStructure>(() => ({
   picture: faker.image.sports(),
   backupPicure: faker.image.sports(),
   createdBy: new mongoose.Types.ObjectId(),
-  _id: new mongoose.Types.ObjectId(),
 }));
 
 export const getRandomPrediction = () => predictionFactory.build();
