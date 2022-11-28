@@ -6,7 +6,7 @@ import {
 } from "../../controllers/predictionsControllers/predictionsControllers.js";
 import routes from "../routes.js";
 
-const { predictionRoute } = routes;
+const { predictionRoute, createRoute } = routes;
 
 // eslint-disable-next-line new-cap
 const predictionsRouter = express.Router();
@@ -15,6 +15,6 @@ predictionsRouter.get("", getPredictions);
 
 predictionsRouter.get(predictionRoute, getPredictionById);
 
-predictionsRouter.post("/create", createPrediction);
+predictionsRouter.post(createRoute, createPrediction);
 
 export default predictionsRouter;

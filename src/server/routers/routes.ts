@@ -4,6 +4,7 @@ const routes = {
   loginRoute: "/login",
   predictionsRoute: "/predictions",
   predictionRoute: "/:predictionId",
+  createRoute: "/create",
 };
 
 export default routes;
