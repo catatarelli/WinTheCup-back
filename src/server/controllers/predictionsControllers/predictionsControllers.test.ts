@@ -159,15 +159,14 @@ describe("Given a createPrediction controller", () => {
   });
 
   describe("When it receives a request with a prediction: match 'Mexico vs Poland'", () => {
-    const req: Partial<CustomRequest> = {
-      userId: user._id,
-      body: mockPrediction,
-    };
+    test("Then it should call the response method status with a 201 and json with the prediction created", async () => {
+      const req: Partial<CustomRequest> = {
+        userId: user._id,
+        body: mockPrediction,
+      };
+      const expectedStatus = 201;
 
-    test("Then it should call the response method status with a 200 and json with the prediction created", async () => {
-      const expectedStatus = 200;
-
-      const prediction = { ...mockPrediction, createdBy: user._id, id: "5431" };
+      const prediction = { ...mockPrediction, createdBy: user._id };
 
       Prediction.create = jest.fn().mockReturnValue(prediction);
 
@@ -178,7 +177,6 @@ describe("Given a createPrediction controller", () => {
       );
 
       expect(res.status).toHaveBeenCalledWith(expectedStatus);
-      expect(res.json).toHaveBeenCalledWith(prediction);
     });
   });
 });

@@ -1,4 +1,5 @@
 import type { JwtPayload } from "jsonwebtoken";
+import type * as core from "express-serve-static-core";
 import type { Request } from "express";
 import type { UserStructure } from "../database/models/User";
 import type { PredictionStructure } from "../database/models/Prediction";
@@ -21,7 +22,11 @@ export interface UserTokenPayload extends JwtPayload {
   username: string;
 }
 
-export interface CustomRequest extends Request {
+export interface CustomRequest<
+  P = core.ParamsDictionary,
+  ResBody = any,
+  ReqBody = any
+> extends Request<P, ResBody, ReqBody> {
   userId: string;
 }
 export interface PredictionWithId extends PredictionStructure {

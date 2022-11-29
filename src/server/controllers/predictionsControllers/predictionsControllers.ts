@@ -57,7 +57,8 @@ export const createPrediction = async (
   next: NextFunction
 ) => {
   const { userId } = req;
-  const { match, goalsTeam1, goalsTeam2 } = req.body as PredictionStructure;
+  const { match, goalsTeam1, goalsTeam2, picture, backupPicure } =
+    req.body as PredictionStructure;
 
   try {
     const prediction = {
@@ -65,11 +66,18 @@ export const createPrediction = async (
       goalsTeam1,
       goalsTeam2,
       createdBy: userId,
+      picture,
+      backupPicure,
     };
 
     const newPrediction = await Prediction.create(prediction);
 
-    res.status(200).json(newPrediction);
+    res.status(201).json({
+      ...newPrediction.toJSON(),
+      picture: prediction.picture
+        ? `${req.protocol}://${req.get("host")}/${prediction.picture}`
+        : "",
+    });
   } catch (error: unknown) {
     const customError = new CustomError(
       (error as Error).message,
