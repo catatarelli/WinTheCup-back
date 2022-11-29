@@ -57,14 +57,25 @@ export const createPrediction = async (
   next: NextFunction
 ) => {
   const { userId } = req;
-  const { match, goalsTeam1, goalsTeam2, picture, backupPicture } =
-    req.body as PredictionStructure;
+  const {
+    match,
+    goalsTeam1,
+    goalsTeam2,
+    redCards,
+    yellowCards,
+    penalties,
+    picture,
+    backupPicture,
+  } = req.body as PredictionStructure;
 
   try {
     const prediction = {
       match,
       goalsTeam1,
       goalsTeam2,
+      redCards,
+      yellowCards,
+      penalties,
       createdBy: userId,
       picture,
       backupPicture,
