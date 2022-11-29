@@ -7,4 +7,7 @@ export const {
   MONGODB_URL: mongoUrl,
   JWT_SECRET: secretWord,
   DEBUG: debug,
+  SUPABASE_URL: supabaseUrl,
+  SUPABASE_KEY: supabaseKey,
+  SUPABASE_BUCKET_ID: supabaseBucketId,
 } = process.env;
