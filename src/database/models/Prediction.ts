@@ -27,7 +27,7 @@ const predictionSchema = new Schema({
   picture: {
     type: String,
   },
-  backupPicure: {
+  backupPicture: {
     type: String,
   },
   createdBy: {

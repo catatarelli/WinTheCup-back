@@ -11,7 +11,7 @@ const predictionFactory = Factory.define<PredictionStructure>(() => ({
   yellowCards: faker.datatype.number(9),
   penalties: faker.datatype.number(9),
   picture: faker.image.sports(),
-  backupPicure: faker.image.sports(),
+  backupPicture: faker.image.sports(),
   createdBy: new mongoose.Types.ObjectId(),
 }));
 

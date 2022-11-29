@@ -57,7 +57,7 @@ export const createPrediction = async (
   next: NextFunction
 ) => {
   const { userId } = req;
-  const { match, goalsTeam1, goalsTeam2, picture, backupPicure } =
+  const { match, goalsTeam1, goalsTeam2, picture, backupPicture } =
     req.body as PredictionStructure;
 
   try {
@@ -67,7 +67,7 @@ export const createPrediction = async (
       goalsTeam2,
       createdBy: userId,
       picture,
-      backupPicure,
+      backupPicture,
     };
 
     const newPrediction = await Prediction.create(prediction);
