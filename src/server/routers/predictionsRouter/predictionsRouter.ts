@@ -13,6 +13,9 @@ const { predictionRoute, createRoute } = routes;
 
 const upload = multer({
   dest: path.join("assets", "images"),
+  limits: {
+    fileSize: 8000000,
+  },
 });
 
 // eslint-disable-next-line new-cap
