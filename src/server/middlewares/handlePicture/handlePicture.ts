@@ -47,7 +47,7 @@ const handlePicture = async (
     } = bucket.getPublicUrl(req.file.filename + req.file.originalname);
 
     req.body.picture = newFilePath;
-    req.body.backupPicure = publicUrl;
+    req.body.backupPicture = publicUrl;
 
     next();
   } catch (error: unknown) {
