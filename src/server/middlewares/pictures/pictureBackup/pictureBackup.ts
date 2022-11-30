@@ -1,19 +1,19 @@
 import { createClient } from "@supabase/supabase-js";
 import path from "path";
 import fs from "fs/promises";
-import type { PredictionStructure } from "../../../database/models/Prediction.js";
+import type { PredictionStructure } from "../../../../database/models/Prediction.js";
 import {
   supabaseUrl,
   supabaseKey,
   supabaseBucketId,
-} from "../../../loadEnvironments.js";
+} from "../../../../loadEnvironments.js";
 import type { NextFunction, Response } from "express";
-import type { CustomRequest } from "../../../types/types.js";
+import type { CustomRequest } from "../../../../types/types.js";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 const bucket = supabase.storage.from(supabaseBucketId);
 
-const handlePicture = async (
+const pictureBackup = async (
   req: CustomRequest<
     Record<string, unknown>,
     Record<string, unknown>,
@@ -55,4 +55,4 @@ const handlePicture = async (
   }
 };
 
-export default handlePicture;
+export default pictureBackup;
