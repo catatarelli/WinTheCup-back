@@ -17,6 +17,7 @@ import type {
 } from "../../../types/types";
 import {
   createPrediction,
+  deletePrediction,
   getPredictionById,
   getPredictions,
 } from "./predictionsControllers";
@@ -198,6 +199,42 @@ describe("Given a createPrediction controller", () => {
       Prediction.create = jest.fn().mockRejectedValue(new Error(""));
 
       await createPrediction(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+});
+
+describe("Given a deletePrediction controller", () => {
+  const prediction = getRandomPrediction() as PredictionWithId;
+  const req: Partial<CustomRequest> = {
+    params: { predictionId: prediction._id },
+  };
+  describe("When it receives a request with a correct prediction Id", () => {
+    test("Then it should call the response method status with a 200", async () => {
+      const expectedStatus = 200;
+
+      Prediction.findOneAndDelete = jest.fn().mockReturnValue(prediction);
+
+      await deletePrediction(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+    });
+  });
+
+  describe("When it receives a request with an incorrect prediction Id", () => {
+    test("Then it should call next with status with a 404", async () => {
+      Prediction.findOneAndDelete = jest.fn().mockRejectedValue(new Error(""));
+
+      await getPredictionById(
         req as CustomRequest,
         res as Response,
         next as NextFunction

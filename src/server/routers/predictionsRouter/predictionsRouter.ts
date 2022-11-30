@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import {
   createPrediction,
+  deletePrediction,
   getPredictionById,
   getPredictions,
 } from "../../controllers/predictionsControllers/predictionsControllers.js";
@@ -10,7 +11,7 @@ import pictureBackup from "../../middlewares/pictures/pictureBackup/pictureBacku
 import pictureResize from "../../middlewares/pictures/pictureResize/pictureResize.js";
 import routes from "../routes.js";
 
-const { predictionRoute, createRoute } = routes;
+const { predictionRoute, createRoute, deleteRoute } = routes;
 
 const upload = multer({
   dest: path.join("assets", "images"),
@@ -33,5 +34,7 @@ predictionsRouter.post(
   pictureBackup,
   createPrediction
 );
+
+predictionsRouter.delete(deleteRoute, deletePrediction);
 
 export default predictionsRouter;
