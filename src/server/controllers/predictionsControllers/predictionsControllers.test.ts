@@ -218,7 +218,7 @@ describe("Given a deletePrediction controller", () => {
     test("Then it should call the response method status with a 200", async () => {
       const expectedStatus = 200;
 
-      Prediction.findOneAndDelete = jest.fn().mockReturnValue(prediction);
+      Prediction.findByIdAndDelete = jest.fn().mockReturnValue(prediction);
 
       await deletePrediction(
         req as CustomRequest,
@@ -232,7 +232,7 @@ describe("Given a deletePrediction controller", () => {
 
   describe("When it receives a request with an incorrect prediction Id", () => {
     test("Then it should call next with status with a 404", async () => {
-      Prediction.findOneAndDelete = jest
+      Prediction.findByIdAndDelete = jest
         .fn()
         .mockRejectedValueOnce(new Error(""));
 

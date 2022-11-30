@@ -164,6 +164,7 @@ describe("Given a DELETE /predictions/delete/:predictionId endpoint", () => {
       const response = await request(app)
         .delete(`/predictions/delete/${predictionId}`)
         .set("Authorization", `Bearer ${requestUserToken}`)
+        .set("Content-Type", "application/json")
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error");
