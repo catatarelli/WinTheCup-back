@@ -83,6 +83,17 @@ export const createPrediction = async (
       backupPicture,
     };
 
+    const checkPrediction = await Prediction.find({ match, createdBy: userId });
+    if (checkPrediction.length !== 0) {
+      const customError = new CustomError(
+        "Prediction already created",
+        409,
+        "Prediction already created"
+      );
+      next(customError);
+      return;
+    }
+
     const newPrediction = await Prediction.create(prediction);
 
     res.status(201).json({

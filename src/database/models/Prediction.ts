@@ -4,7 +4,6 @@ import type { InferSchemaType } from "mongoose";
 const predictionSchema = new Schema({
   match: {
     type: String,
-    unique: true,
     required: true,
   },
   goalsTeam1: {
