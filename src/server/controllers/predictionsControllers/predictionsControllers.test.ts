@@ -139,14 +139,20 @@ describe("Given a getPredictionById controller", () => {
 describe("Given a createPrediction controller", () => {
   const user = getRandomUser() as UserWithId;
 
-  describe("When it receives a request with a prediction: match 'Argentina vs England' and that match is already in the list", () => {
+  describe("When it receives a request with a prediction: match 'Argentina vs England' and that match is already in the list of that user", () => {
     const req: Partial<CustomRequest> = {
       userId: user._id,
       body: repeatedMockPrediction,
     };
 
     test("Then it should call next with an error", async () => {
-      Prediction.create = jest.fn().mockRejectedValue(new Error(""));
+      Prediction.find = jest.fn().mockResolvedValue(repeatedMockPrediction);
+
+      const customError = new CustomError(
+        "Prediction already created",
+        409,
+        "Prediction already created"
+      );
 
       await createPrediction(
         req as CustomRequest,
@@ -154,7 +160,7 @@ describe("Given a createPrediction controller", () => {
         next as NextFunction
       );
 
-      expect(next).toHaveBeenCalled();
+      expect(next).toHaveBeenCalledWith(customError);
     });
   });
 
@@ -168,6 +174,7 @@ describe("Given a createPrediction controller", () => {
 
       const prediction = { ...mockPrediction, createdBy: user._id };
 
+      Prediction.find = jest.fn().mockReturnValue([]);
       Prediction.create = jest.fn().mockReturnValue(prediction);
 
       await createPrediction(
@@ -177,6 +184,26 @@ describe("Given a createPrediction controller", () => {
       );
 
       expect(res.status).toHaveBeenCalledWith(expectedStatus);
+    });
+  });
+
+  describe("When it receives a request with a prediction: match 'Mexico vs Poland'", () => {
+    test("And there is an error, then it should call next", async () => {
+      const req: Partial<CustomRequest> = {
+        userId: user._id,
+        body: mockPrediction,
+      };
+
+      Prediction.find = jest.fn().mockReturnValue([]);
+      Prediction.create = jest.fn().mockRejectedValue(new Error(""));
+
+      await createPrediction(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
     });
   });
 });
