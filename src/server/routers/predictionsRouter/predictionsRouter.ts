@@ -6,7 +6,8 @@ import {
   getPredictionById,
   getPredictions,
 } from "../../controllers/predictionsControllers/predictionsControllers.js";
-import handlePicture from "../../middlewares/handlePicture/handlePicture.js";
+import pictureBackup from "../../middlewares/pictures/pictureBackup/pictureBackup.js";
+import pictureResize from "../../middlewares/pictures/pictureResize/pictureResize.js";
 import routes from "../routes.js";
 
 const { predictionRoute, createRoute } = routes;
@@ -28,7 +29,8 @@ predictionsRouter.get(predictionRoute, getPredictionById);
 predictionsRouter.post(
   createRoute,
   upload.single("picture"),
-  handlePicture,
+  pictureResize,
+  pictureBackup,
   createPrediction
 );
 
