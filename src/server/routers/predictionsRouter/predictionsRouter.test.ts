@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import connectDatabase from "../../../database/connectDatabase.js";
-import User from "../../../database/models/User.js";
 import type { UserWithId } from "../../../types/types.js";
 import app from "../../app.js";
 import { getRandomUser } from "../../../mocks/userFactory.js";
@@ -26,7 +25,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await User.deleteMany({});
+  await Prediction.deleteMany({});
 });
 
 afterAll(async () => {
@@ -93,6 +92,44 @@ describe("Given a GET /predictions/:predictionId endpoint", () => {
         .get(`/predictions/${predictionId}`)
         .set("Authorization", `Bearer ${requestUserToken}`)
         .set("Content-Type", "application/json")
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error");
+    });
+  });
+});
+
+describe("Given a POST /predictions/create endpoint", () => {
+  describe("When it receives a request from a logged in user with a prediction", () => {
+    test("Then it should call the response method status with a 201, and the prediction", async () => {
+      const expectedStatus = 201;
+
+      const prediction = getRandomPrediction();
+
+      const response = await request(app)
+        .post("/predictions/create")
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .send(prediction)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("match");
+    });
+  });
+
+  describe("When it receives a request from a logged in user with a prediction that the user has previously created", () => {
+    test("Then it should call the response method status with a 409", async () => {
+      const expectedStatus = 409;
+
+      const prediction = getRandomPrediction();
+
+      const predictionWithOwner = { ...prediction, createdBy: user._id };
+
+      await Prediction.create(predictionWithOwner);
+
+      const response = await request(app)
+        .post("/predictions/create")
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .send(predictionWithOwner)
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error");
