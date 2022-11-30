@@ -14,18 +14,18 @@ const req: Partial<CustomRequest> = {
 const next = jest.fn() as NextFunction;
 
 const file: Partial<Express.Multer.File> = {
-  filename: "test",
-  originalname: "originalTest",
+  filename: "footballFans",
+  originalname: "footballFansOriginalName",
 };
 
 let mockedFile = jest.fn();
 
 beforeAll(async () => {
-  await fs.writeFile("assets/randomsession", "randomsession");
+  await fs.writeFile("assets/randomprediction", "randomprediction");
 });
 
 afterAll(async () => {
-  await fs.unlink("assets/randomsession");
+  await fs.unlink("assets/randomprediction");
 });
 
 beforeEach(() => {
@@ -45,12 +45,13 @@ jest.mock("sharp", () => () => ({
 describe("Given an pictureResize middleware", () => {
   describe("When it receives a request with a file", () => {
     test("Then it should resize the image and call next", async () => {
+      const expectedFile = "footballFansOriginalName.webp";
       req.file = file as Express.Multer.File;
 
       await pictureResize(req as CustomRequest, null, next);
 
       expect(next).toHaveBeenCalled();
-      expect(req.file.filename).toContain(`.webp`);
+      expect(req.file.filename).toBe(expectedFile);
     });
   });
 
@@ -67,6 +68,18 @@ describe("Given an pictureResize middleware", () => {
       );
 
       expect(next).toBeCalledWith(newError);
+    });
+  });
+
+  describe("When it receives a request with no file", () => {
+    test("Then next should be called", async () => {
+      const req: Partial<CustomRequest> = {
+        body: newPrediction,
+      };
+
+      await pictureResize(req as CustomRequest, null, next);
+
+      expect(next).toBeCalled();
     });
   });
 });
