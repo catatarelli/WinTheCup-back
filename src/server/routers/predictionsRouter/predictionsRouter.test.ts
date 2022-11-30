@@ -136,3 +136,50 @@ describe("Given a POST /predictions/create endpoint", () => {
     });
   });
 });
+
+describe("Given a DELETE /predictions/delete/:predictionId endpoint", () => {
+  describe("When it receives a request from a logged in user with existing prediction id", () => {
+    test("Then it should call the response method status with a 200", async () => {
+      const expectedStatus = 200;
+
+      const prediction = getRandomPrediction();
+
+      const predictionWithOwner = { ...prediction, createdBy: user._id };
+
+      const newPrediction = await Prediction.create(predictionWithOwner);
+
+      await request(app)
+        .delete(`/predictions/delete/${newPrediction._id}`)
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .set("Content-Type", "application/json")
+        .expect(expectedStatus);
+    });
+  });
+
+  describe("When it receives a request from a logged in user with incorrect prediction id '12345'", () => {
+    test("Then it should call the response method status with a 404 and an error", async () => {
+      const expectedStatus = 404;
+      const predictionId = "12345";
+
+      const response = await request(app)
+        .delete(`/predictions/delete/${predictionId}`)
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error");
+    });
+  });
+
+  describe("When it receives a request from a user that is not logged in", () => {
+    test("Then it should call the response method status with a 401 and an error", async () => {
+      const expectedStatus = 401;
+      const predictionId = "12345";
+
+      const response = await request(app)
+        .delete(`/predictions/delete/${predictionId}`)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error");
+    });
+  });
+});

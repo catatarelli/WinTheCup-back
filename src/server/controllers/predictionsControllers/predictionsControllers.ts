@@ -118,16 +118,24 @@ export const deletePrediction = async (
   const { predictionId } = req.params;
   const { userId } = req;
   try {
-    await Prediction.findOneAndDelete({
+    const prediction = await Prediction.findOneAndDelete({
       id: predictionId,
       createdBy: userId,
     });
+
+    if (!prediction) {
+      next(
+        new CustomError("Prediction not found", 404, "Prediction not found")
+      );
+
+      return;
+    }
 
     res.status(200).json();
   } catch (error: unknown) {
     const customError = new CustomError(
       (error as Error).message,
-      404,
+      400,
       "Prediction not found"
     );
     next(customError);
