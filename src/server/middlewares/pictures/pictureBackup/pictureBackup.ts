@@ -9,9 +9,10 @@ import {
 } from "../../../../loadEnvironments.js";
 import type { NextFunction, Response } from "express";
 import type { CustomRequest } from "../../../../types/types.js";
+import CustomError from "../../../../CustomError/CustomError.js";
 
 const supabase = createClient(supabaseUrl, supabaseKey);
-const bucket = supabase.storage.from(supabaseBucketId);
+export const bucket = supabase.storage.from(supabaseBucketId);
 
 const pictureBackup = async (
   req: CustomRequest<
@@ -51,7 +52,12 @@ const pictureBackup = async (
 
     next();
   } catch (error: unknown) {
-    next(error);
+    const customError = new CustomError(
+      (error as Error).message,
+      400,
+      "Error renaming the picture"
+    );
+    next(customError);
   }
 };
 
