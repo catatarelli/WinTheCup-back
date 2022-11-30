@@ -98,15 +98,37 @@ export const createPrediction = async (
 
     res.status(201).json({
       ...newPrediction.toJSON(),
-      picture: prediction.picture
-        ? `${req.protocol}://${req.get("host")}/${prediction.picture}`
-        : "",
+      picture: prediction.picture,
     });
   } catch (error: unknown) {
     const customError = new CustomError(
       (error as Error).message,
       400,
       "Error creating the prediction"
+    );
+    next(customError);
+  }
+};
+
+export const deletePrediction = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { predictionId } = req.params;
+  const { userId } = req;
+  try {
+    await Prediction.findOneAndDelete({
+      id: predictionId,
+      createdBy: userId,
+    });
+
+    res.status(200).json();
+  } catch (error: unknown) {
+    const customError = new CustomError(
+      (error as Error).message,
+      404,
+      "Prediction not found"
     );
     next(customError);
   }
