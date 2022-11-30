@@ -11,7 +11,9 @@ export const getPredictions = async (
 ) => {
   const { userId } = req;
   try {
-    const predictions = await Prediction.find({ createrBy: userId });
+    const predictions = await Prediction.find({
+      createdBy: userId,
+    });
     res.status(200).json({ predictions });
   } catch (error: unknown) {
     const customError = new CustomError(

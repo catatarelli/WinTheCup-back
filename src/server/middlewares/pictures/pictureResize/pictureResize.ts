@@ -9,6 +9,11 @@ const pictureResize = async (
   res: Response,
   next: NextFunction
 ) => {
+  if (!req.file) {
+    next();
+    return;
+  }
+
   const { originalname, filename } = req.file;
 
   const pathBase = `${path.basename(originalname, path.extname(originalname))}`;
