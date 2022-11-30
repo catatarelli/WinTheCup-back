@@ -3,7 +3,7 @@ import type { NextFunction, Response } from "express";
 import fs from "fs/promises";
 import { getRandomPrediction } from "../../../../mocks/predictionsFactory";
 import type { CustomRequest } from "../../../../types/types";
-import pictureBackup from "./pictureBackup";
+import pictureBackup, { bucket } from "./pictureBackup";
 
 jest.mock("@supabase/supabase-js", () => ({
   createClient: () => ({
@@ -49,6 +49,14 @@ afterAll(async () => {
 describe("Given a pictureBackup middleware", () => {
   describe("When it's invoked with a file in the request", () => {
     test("Then it should rename the file, upload it to supabase and call next", async () => {
+      fs.readFile = jest.fn().mockResolvedValueOnce(newPrediction.picture);
+
+      bucket.upload = jest.fn();
+
+      bucket.getPublicUrl = jest.fn().mockReturnValueOnce({
+        data: { publicUrl: newPrediction.picture },
+      });
+
       await pictureBackup(req as CustomRequest, res as Response, next);
       expect(next).toHaveBeenCalled();
     });
@@ -61,6 +69,17 @@ describe("Given a pictureBackup middleware", () => {
       };
 
       await pictureBackup(emptyReq as CustomRequest, res as Response, next);
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe("When it's invoked with a file in the request and there is an error", () => {
+    test("Then it should call next with an error", async () => {
+      fs.readFile = jest.fn().mockRejectedValue(new Error(""));
+
+      await pictureBackup(req as CustomRequest, res as Response, next);
+
       expect(next).toHaveBeenCalled();
     });
   });
