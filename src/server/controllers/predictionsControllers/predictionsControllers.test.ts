@@ -232,7 +232,9 @@ describe("Given a deletePrediction controller", () => {
 
   describe("When it receives a request with an incorrect prediction Id", () => {
     test("Then it should call next with status with a 404", async () => {
-      Prediction.findOneAndDelete = jest.fn().mockRejectedValue(new Error(""));
+      Prediction.findOneAndDelete = jest
+        .fn()
+        .mockRejectedValueOnce(new Error(""));
 
       await getPredictionById(
         req as CustomRequest,
