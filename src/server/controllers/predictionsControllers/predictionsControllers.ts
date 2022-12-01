@@ -130,3 +130,30 @@ export const deletePrediction = async (
     next(customError);
   }
 };
+
+export const editPrediction = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { predictionId } = req.params;
+
+  try {
+    const prediction = await Prediction.findByIdAndUpdate(
+      predictionId,
+      req.body,
+      {
+        returnDocument: "after",
+      }
+    );
+
+    res.status(200).json(prediction);
+  } catch (error: unknown) {
+    const customError = new CustomError(
+      (error as Error).message,
+      404,
+      "Prediction not found"
+    );
+    next(customError);
+  }
+};
