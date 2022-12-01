@@ -4,6 +4,7 @@ import path from "path";
 import {
   createPrediction,
   deletePrediction,
+  editPrediction,
   getPredictionById,
   getPredictions,
 } from "../../controllers/predictionsControllers/predictionsControllers.js";
@@ -11,7 +12,7 @@ import pictureBackup from "../../middlewares/pictures/pictureBackup/pictureBacku
 import pictureResize from "../../middlewares/pictures/pictureResize/pictureResize.js";
 import routes from "../routes.js";
 
-const { predictionRoute, createRoute, deleteRoute } = routes;
+const { predictionRoute, createRoute, deleteRoute, updateRoute } = routes;
 
 const upload = multer({
   dest: path.join("assets", "images"),
@@ -36,5 +37,7 @@ predictionsRouter.post(
 );
 
 predictionsRouter.delete(deleteRoute, deletePrediction);
+
+predictionsRouter.patch(updateRoute, editPrediction);
 
 export default predictionsRouter;

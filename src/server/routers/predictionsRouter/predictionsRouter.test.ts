@@ -184,3 +184,41 @@ describe("Given a DELETE /predictions/delete/:predictionId endpoint", () => {
     });
   });
 });
+
+describe("Given a PATCH /predictions/update/:predictionId endpoint", () => {
+  describe("When it receives a request from a logged in user with existing prediction id", () => {
+    test("Then it should call the response method status with a 200, and the prediction updated", async () => {
+      const expectedStatus = 200;
+
+      const prediction = getRandomPrediction();
+
+      const predictionWithOwner = { ...prediction, createdBy: user._id };
+
+      const newPrediction = await Prediction.create(predictionWithOwner);
+
+      const match = { match: "Argentina vs Mexico" };
+
+      const response = await request(app)
+        .patch(`/predictions/update/${newPrediction.id}`)
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .send(match)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("match", match.match);
+    });
+  });
+
+  describe("When it receives a request from a logged in user with incorrect prediction id 'abc123'", () => {
+    test("Then it should call the response method status with a 404 and an error", async () => {
+      const expectedStatus = 404;
+      const predictionId = "abc123";
+
+      const response = await request(app)
+        .patch(`/predictions/update/${predictionId}`)
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .expect(expectedStatus);
+
+      expect(response.body).toHaveProperty("error");
+    });
+  });
+});
