@@ -6,6 +6,7 @@ const routes = {
   predictionRoute: "/:predictionId",
   createRoute: "/create",
   deleteRoute: "/delete/:predictionId",
+  updateRoute: "/update/:predictionId",
 };
 
 export default routes;
