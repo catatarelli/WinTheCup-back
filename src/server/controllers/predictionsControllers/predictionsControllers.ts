@@ -116,9 +116,22 @@ export const deletePrediction = async (
   next: NextFunction
 ) => {
   const { predictionId } = req.params;
+  const { userId } = req;
 
   try {
-    const prediction = await Prediction.findByIdAndDelete(predictionId);
+    const prediction = await Prediction.findById(predictionId);
+
+    if (userId !== prediction.createdBy.toString()) {
+      const customError = new CustomError(
+        "Error deleting the prediction",
+        400,
+        "Error deleting the prediction"
+      );
+      next(customError);
+      return;
+    }
+
+    await Prediction.findByIdAndDelete(predictionId);
 
     res.status(200).json(prediction);
   } catch (error: unknown) {
@@ -137,9 +150,22 @@ export const editPrediction = async (
   next: NextFunction
 ) => {
   const { predictionId } = req.params;
+  const { userId } = req;
 
   try {
-    const prediction = await Prediction.findByIdAndUpdate(
+    const prediction = await Prediction.findById(predictionId);
+
+    if (userId !== prediction.createdBy.toString()) {
+      const customError = new CustomError(
+        "Error updating the prediction",
+        400,
+        "Error updating the prediction"
+      );
+      next(customError);
+      return;
+    }
+
+    const updatedPrediction = await Prediction.findByIdAndUpdate(
       predictionId,
       req.body,
       {
@@ -147,7 +173,7 @@ export const editPrediction = async (
       }
     );
 
-    res.status(200).json(prediction);
+    res.status(200).json(updatedPrediction);
   } catch (error: unknown) {
     const customError = new CustomError(
       (error as Error).message,

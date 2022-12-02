@@ -212,12 +212,17 @@ describe("Given a createPrediction controller", () => {
 
 describe("Given a deletePrediction controller", () => {
   const prediction = getRandomPrediction() as PredictionWithId;
+
   const req: Partial<CustomRequest> = {
     params: { predictionId: prediction._id },
+    userId: prediction.createdBy.toString(),
   };
+
   describe("When it receives a request with a correct prediction Id", () => {
     test("Then it should call the response method status with a 200", async () => {
       const expectedStatus = 200;
+
+      Prediction.findById = jest.fn().mockReturnValue(prediction);
 
       Prediction.findByIdAndDelete = jest.fn().mockReturnValue(prediction);
 
@@ -232,12 +237,33 @@ describe("Given a deletePrediction controller", () => {
   });
 
   describe("When it receives a request with an incorrect prediction Id", () => {
-    test("Then it should call next with status with a 404", async () => {
+    test("Then it should call next", async () => {
+      Prediction.findById = jest.fn().mockRejectedValueOnce(new Error(""));
+
       Prediction.findByIdAndDelete = jest
         .fn()
         .mockRejectedValueOnce(new Error(""));
 
-      await getPredictionById(
+      await deletePrediction(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe("When it receives a request from a user that has not created that prediction", () => {
+    test("Then it should call next", async () => {
+      const req: Partial<CustomRequest> = {
+        params: { predictionId: prediction._id },
+        userId: "1234",
+      };
+
+      Prediction.findById = jest.fn().mockResolvedValue(prediction);
+
+      await deletePrediction(
         req as CustomRequest,
         res as Response,
         next as NextFunction
@@ -252,11 +278,14 @@ describe("Given a editPrediction controller", () => {
   const prediction = getRandomPrediction() as PredictionWithId;
   const req: Partial<CustomRequest> = {
     params: { predictionId: prediction._id },
+    userId: prediction.createdBy.toString(),
   };
 
   describe("When it receives a request with a correct prediction Id", () => {
     test("Then it should call the response method status with a 200 and json with the prediction with the new information", async () => {
       const expectedStatus = 200;
+
+      Prediction.findById = jest.fn().mockReturnValue(prediction);
 
       Prediction.findByIdAndUpdate = jest.fn().mockReturnValue(prediction);
 
@@ -273,9 +302,30 @@ describe("Given a editPrediction controller", () => {
 
   describe("When it receives a request with an incorrect prediction Id", () => {
     test("Then it should call the next with a response status 404 and public message 'Prediction not found'", async () => {
+      Prediction.findById = jest.fn().mockRejectedValueOnce(new Error(""));
+
       Prediction.findByIdAndUpdate = jest.fn().mockRejectedValue(new Error(""));
 
-      await getPredictionById(
+      await editPrediction(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe("When it receives a request from a user that has not created that prediction", () => {
+    test("Then it should call next", async () => {
+      const req: Partial<CustomRequest> = {
+        params: { predictionId: prediction._id },
+        userId: "1234",
+      };
+
+      Prediction.findById = jest.fn().mockResolvedValue(prediction);
+
+      await editPrediction(
         req as CustomRequest,
         res as Response,
         next as NextFunction
