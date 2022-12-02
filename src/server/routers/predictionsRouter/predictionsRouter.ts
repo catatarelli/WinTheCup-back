@@ -38,6 +38,12 @@ predictionsRouter.post(
 
 predictionsRouter.delete(deleteRoute, deletePrediction);
 
-predictionsRouter.patch(updateRoute, editPrediction);
+predictionsRouter.patch(
+  updateRoute,
+  upload.single("picture"),
+  pictureResize,
+  pictureBackup,
+  editPrediction
+);
 
 export default predictionsRouter;
