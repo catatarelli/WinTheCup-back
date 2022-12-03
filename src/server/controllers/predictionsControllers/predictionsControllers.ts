@@ -10,11 +10,41 @@ export const getPredictions = async (
   next: NextFunction
 ) => {
   const { userId } = req;
+
+  let predictions;
+
+  const pageOptions = {
+    page: +req.query.page || 0,
+    limit: 5,
+  };
+
+  const countPredictions: number = await Prediction.countDocuments().exec();
+
+  const checkPages = {
+    isPreviousPage: pageOptions.page !== 0,
+    isNextPage: countPredictions >= pageOptions.limit * (pageOptions.page + 1),
+    totalPages: Math.ceil(countPredictions / pageOptions.limit),
+  };
+
   try {
-    const predictions = await Prediction.find({
+    predictions = await Prediction.find({
       createdBy: userId,
-    });
-    res.status(200).json({ predictions });
+    })
+      .skip(pageOptions.page * pageOptions.limit)
+      .limit(pageOptions.limit)
+      .exec();
+
+    if (predictions.length === 0) {
+      next(
+        new CustomError(
+          "No available predictions",
+          404,
+          "Predictions not found"
+        )
+      );
+    }
+
+    res.status(200).json({ ...checkPages, predictions });
   } catch (error: unknown) {
     const customError = new CustomError(
       (error as Error).message,
