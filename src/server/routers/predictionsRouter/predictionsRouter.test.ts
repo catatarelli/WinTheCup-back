@@ -38,6 +38,12 @@ describe("Given a GET /predictions endpoint", () => {
     test("Then it should call the response method status with a 200, and a list of predictions of that user", async () => {
       const expectedStatus = 200;
 
+      const prediction = { ...getRandomPrediction(), createdBy: user._id };
+
+      const predictions = [prediction];
+
+      await Prediction.create(predictions);
+
       const response = await request(app)
         .get("/predictions")
         .set("Authorization", `Bearer ${requestUserToken}`)

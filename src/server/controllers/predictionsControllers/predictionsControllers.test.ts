@@ -32,19 +32,29 @@ const res: Partial<Response> = {
   json: jest.fn(),
 };
 
+const req: Partial<CustomRequest> = {
+  userId: "54321",
+  params: {},
+  query: { page: "0" },
+};
+
 const next = jest.fn();
 
 describe("Given a getPredictions controller", () => {
-  const req: Partial<CustomRequest> = {
-    userId: "54321",
-  };
-
   describe("When it receives request with id '54321'", () => {
     test("Then it should call the response method status with a 200 and json with a list of predictions created by user '54321'", async () => {
       const expectedStatus = 200;
 
+      Prediction.countDocuments = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockReturnValue(5) });
+
       Prediction.find = jest.fn().mockReturnValue({
-        select: jest.fn().mockReturnValue(getRandomPredictionsList(2)),
+        skip: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            exec: jest.fn().mockReturnValue(getRandomPredictionsList(3)),
+          }),
+        }),
       });
 
       await getPredictions(req as CustomRequest, res as Response, null);
@@ -55,20 +65,52 @@ describe("Given a getPredictions controller", () => {
 
   describe("When it receives a request and Prediction.find rejects", () => {
     test("Then next should be called with an error", async () => {
-      const customError = new CustomError(
-        "",
-        500,
-        "Database doesn't work, try again later"
-      );
+      Prediction.countDocuments = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockReturnValue(5) });
 
-      const error = new Error();
-
-      Prediction.find = jest.fn().mockRejectedValue(error);
+      Prediction.find = jest.fn().mockReturnValue({
+        skip: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            exec: jest.fn().mockRejectedValue(new Error("")),
+          }),
+        }),
+      });
 
       await getPredictions(
         req as CustomRequest,
         res as Response,
         next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
+    });
+  });
+
+  describe("When it receives a request and there are no predictions in the database", () => {
+    test("Then next should be called with an error", async () => {
+      Prediction.countDocuments = jest
+        .fn()
+        .mockReturnValue({ exec: jest.fn().mockReturnValue(null) });
+
+      Prediction.find = jest.fn().mockReturnValue({
+        skip: jest.fn().mockReturnValue({
+          limit: jest.fn().mockReturnValue({
+            exec: jest.fn().mockReturnValue([]),
+          }),
+        }),
+      });
+
+      await getPredictions(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      const customError = new CustomError(
+        "No available predictions",
+        404,
+        "Predictions not found"
       );
 
       expect(next).toHaveBeenCalledWith(customError);
