@@ -18,7 +18,9 @@ export const getPredictions = async (
     limit: 5,
   };
 
-  const countPredictions: number = await Prediction.countDocuments().exec();
+  const countPredictions: number = await Prediction.countDocuments({
+    createdBy: userId,
+  }).exec();
 
   const checkPages = {
     isPreviousPage: pageOptions.page !== 0,
