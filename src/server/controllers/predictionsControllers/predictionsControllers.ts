@@ -36,16 +36,6 @@ export const getPredictions = async (
       .limit(pageOptions.limit)
       .exec();
 
-    if (predictions.length === 0) {
-      next(
-        new CustomError(
-          "No available predictions",
-          404,
-          "Predictions not found"
-        )
-      );
-    }
-
     res.status(200).json({ ...checkPages, predictions });
   } catch (error: unknown) {
     const customError = new CustomError(
