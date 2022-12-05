@@ -12,29 +12,44 @@ export const getPredictions = async (
   const { userId } = req;
 
   let predictions;
+  let countPredictions: number;
 
   const pageOptions = {
     page: +req.query.page || 0,
     limit: 5,
-  };
-
-  const countPredictions: number = await Prediction.countDocuments({
-    createdBy: userId,
-  }).exec();
-
-  const checkPages = {
-    isPreviousPage: pageOptions.page !== 0,
-    isNextPage: countPredictions >= pageOptions.limit * (pageOptions.page + 1),
-    totalPages: Math.ceil(countPredictions / pageOptions.limit),
+    country: req.query.country as string,
   };
 
   try {
-    predictions = await Prediction.find({
-      createdBy: userId,
-    })
-      .skip(pageOptions.page * pageOptions.limit)
-      .limit(pageOptions.limit)
-      .exec();
+    if (pageOptions.country) {
+      predictions = await Prediction.find({
+        createdBy: userId,
+        match: { $regex: `.*${pageOptions.country}.*` },
+      })
+        .skip(pageOptions.page * pageOptions.limit)
+        .limit(pageOptions.limit)
+        .exec();
+
+      countPredictions = predictions.length;
+    } else {
+      countPredictions = await Prediction.countDocuments({
+        createdBy: userId,
+      }).exec();
+
+      predictions = await Prediction.find({
+        createdBy: userId,
+      })
+        .skip(pageOptions.page * pageOptions.limit)
+        .limit(pageOptions.limit)
+        .exec();
+    }
+
+    const checkPages = {
+      isPreviousPage: pageOptions.page !== 0,
+      isNextPage:
+        countPredictions >= pageOptions.limit * (pageOptions.page + 1),
+      totalPages: Math.ceil(countPredictions / pageOptions.limit),
+    };
 
     res.status(200).json({ ...checkPages, predictions });
   } catch (error: unknown) {
