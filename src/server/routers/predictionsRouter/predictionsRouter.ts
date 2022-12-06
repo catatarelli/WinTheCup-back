@@ -12,7 +12,12 @@ import pictureBackup from "../../middlewares/pictures/pictureBackup/pictureBacku
 import pictureResize from "../../middlewares/pictures/pictureResize/pictureResize.js";
 import routes from "../routes.js";
 
-const { predictionRoute, createRoute, deleteRoute, updateRoute } = routes;
+const {
+  predictionRoute,
+  createPredictionRoute,
+  deletePredictionRoute,
+  updatePredictionRoute,
+} = routes;
 
 const upload = multer({
   dest: path.join("assets", "images"),
@@ -29,17 +34,17 @@ predictionsRouter.get("", getPredictions);
 predictionsRouter.get(predictionRoute, getPredictionById);
 
 predictionsRouter.post(
-  createRoute,
+  createPredictionRoute,
   upload.single("picture"),
   pictureResize,
   pictureBackup,
   createPrediction
 );
 
-predictionsRouter.delete(deleteRoute, deletePrediction);
+predictionsRouter.delete(deletePredictionRoute, deletePrediction);
 
 predictionsRouter.patch(
-  updateRoute,
+  updatePredictionRoute,
   upload.single("picture"),
   pictureResize,
   pictureBackup,

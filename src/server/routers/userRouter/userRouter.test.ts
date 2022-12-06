@@ -2,10 +2,14 @@ import "../../../loadEnvironments";
 import request from "supertest";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import connectDatabase from "../../../database/connectDatabase";
 import User from "../../../database/models/User.js";
 import app from "../../app.js";
+import { getRandomUser } from "../../../mocks/userFactory";
+import type { UserWithId } from "../../../types/types";
+import { secretWord } from "../../../loadEnvironments";
 
 let server: MongoMemoryServer;
 
@@ -62,7 +66,7 @@ describe("Given a POST /user/register endpoint", () => {
   });
 });
 
-describe("Given a POST /users/login endpoint", () => {
+describe("Given a POST /user/login endpoint", () => {
   const loginData = {
     username: "panchito",
     password: "panchito123",
@@ -125,6 +129,40 @@ describe("Given a POST /users/login endpoint", () => {
         .expect(expectedStatus);
 
       expect(response.body).toHaveProperty("error", "Wrong credentials");
+    });
+  });
+});
+
+describe("Given a PATCH /user/update endpoint", () => {
+  describe("When it receives a request from user 'panchito' with new email 'panchito@hotmail.com'", () => {
+    test("Then it should respond with a response status 200 and the updated user", async () => {
+      const expectedStatus = 200;
+
+      const user = getRandomUser() as UserWithId;
+
+      const requestUserToken = jwt.sign(
+        { username: user.username, id: user._id.toString() },
+        secretWord
+      );
+
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+
+      await User.create({
+        username: user.username,
+        password: hashedPassword,
+        email: user.email,
+      });
+
+      const updateData = {
+        email: "panchito@hotmail.com",
+        password: hashedPassword,
+      };
+
+      await request(app)
+        .patch("/user/update/")
+        .set("Authorization", `Bearer ${requestUserToken}`)
+        .send(updateData)
+        .expect(expectedStatus);
     });
   });
 });
