@@ -65,7 +65,7 @@ export const loginUser = async (
     expiresIn: "2d",
   });
 
-  res.status(200).json({ token });
+  res.status(200).json({ token, email: user.email });
 };
 
 export const editUser = async (
