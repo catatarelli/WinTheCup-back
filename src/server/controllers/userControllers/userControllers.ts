@@ -4,6 +4,8 @@ import type { NextFunction, Response, Request } from "express";
 import CustomError from "../../../CustomError/CustomError.js";
 import User from "../../../database/models/User.js";
 import type {
+  CustomRequest,
+  EditUserRequestBody,
   RegisterData,
   UserCredentials,
   UserTokenPayload,
@@ -64,4 +66,47 @@ export const loginUser = async (
   });
 
   res.status(200).json({ token });
+};
+
+export const editUser = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const { userId } = req;
+  const { password } = req.body as EditUserRequestBody;
+  let profile;
+
+  try {
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const newUser = {
+        ...req.body,
+        password: hashedPassword,
+      };
+
+      profile = await User.findByIdAndUpdate(userId, newUser, {
+        returnDocument: "after",
+      })
+        .select("-password")
+        .exec();
+    } else {
+      profile = await User.findByIdAndUpdate(userId, req.body, {
+        returnDocument: "after",
+      })
+        .select("-password")
+        .exec();
+    }
+
+    res.status(200).json(profile);
+  } catch (error: unknown) {
+    const customError = new CustomError(
+      (error as Error).message,
+      409,
+      "Error updating user"
+    );
+    next(customError);
+  }
 };
