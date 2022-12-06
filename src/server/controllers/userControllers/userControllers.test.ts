@@ -3,13 +3,14 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { NextFunction, Request, Response } from "express";
 import User from "../../../database/models/User.js";
-import { loginUser, registerUser } from "./userControllers.js";
+import { editUser, loginUser, registerUser } from "./userControllers.js";
 import {
   userMock,
   userMockRegisterData,
   userMockWithId,
 } from "../../../mocks/userMocks.js";
 import CustomError from "../../../CustomError/CustomError.js";
+import type { CustomRequest } from "../../../types/types.js";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -107,6 +108,92 @@ describe("Given a loginUser Controller", () => {
       await loginUser(req as Request, res as Response, next as NextFunction);
 
       expect(next).toHaveBeenCalledWith(newCustomError);
+    });
+  });
+});
+
+describe("Given a editUser Controller", () => {
+  describe("When it receives a request from a registered user with new password 'paquito345'", () => {
+    test("Then it should respond with response status 200, and the json method with the new user data", async () => {
+      const req: Partial<CustomRequest> = {
+        userId: userMockWithId._id,
+      };
+      const profile = {
+        ...userMockWithId,
+        password: "paquito345",
+      };
+
+      req.body = profile;
+
+      const expectedStatus = 200;
+
+      User.findByIdAndUpdate = jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          exec: jest.fn().mockReturnValue({ userMockWithId }),
+        }),
+      });
+
+      await editUser(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(res.json).toHaveBeenCalledWith({ userMockWithId });
+    });
+  });
+
+  describe("When it receives a request from a registered user with new email 'paquito@gmail.com'", () => {
+    test("Then it should respond with response status 200, and the json method with the new user data", async () => {
+      const req: Partial<CustomRequest> = {
+        userId: userMockWithId._id,
+      };
+      const profile = {
+        email: "paquito@gmail.com",
+      };
+
+      req.body = profile;
+
+      const expectedStatus = 200;
+
+      User.findByIdAndUpdate = jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          exec: jest.fn().mockReturnValue({ userMockWithId }),
+        }),
+      });
+
+      await editUser(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(res.status).toHaveBeenCalledWith(expectedStatus);
+      expect(res.json).toHaveBeenCalledWith({ userMockWithId });
+    });
+  });
+
+  describe("When it receives a request from username 'pepito' that is not in the database", () => {
+    test("Then it should call next with a Custom Error with public message 'Error updating user' and response status 409", async () => {
+      const req: Partial<CustomRequest> = {
+        userId: "",
+        body: {},
+      };
+
+      User.findByIdAndUpdate = jest.fn().mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          exec: jest.fn().mockRejectedValue(new Error("")),
+        }),
+      });
+
+      await editUser(
+        req as CustomRequest,
+        res as Response,
+        next as NextFunction
+      );
+
+      expect(next).toHaveBeenCalled();
     });
   });
 });
