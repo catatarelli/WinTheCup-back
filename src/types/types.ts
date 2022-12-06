@@ -32,3 +32,9 @@ export interface CustomRequest<
 export interface PredictionWithId extends PredictionStructure {
   _id: string;
 }
+
+export interface EditUserRequestBody {
+  username?: string;
+  password?: string;
+  email?: string;
+}
