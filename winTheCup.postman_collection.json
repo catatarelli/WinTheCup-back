@@ -1,55 +1,218 @@
 {
-  "info": {
-    "_postman_id": "af6988e6-419a-4555-ab9d-e219396cfd62",
-    "name": "New Collection",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "23871236"
-  },
-  "item": [
-    {
-      "name": "New Request",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "body": {
-          "mode": "raw",
-          "raw": "\r\n{\r\n\"username\": \"catatarelli\",\r\n\"\"\r\n}",
-          "options": {
-            "raw": {
-              "language": "json"
-            }
-          }
-        },
-        "url": {
-          "raw": "{{url-local}}/user/register",
-          "host": ["{{url-local}}"],
-          "path": ["user", "register"]
-        }
-      },
-      "response": []
-    }
-  ],
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [""]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [""]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "url-local",
-      "value": "http://localhost:4000",
-      "type": "string"
-    }
-  ]
+	"info": {
+		"_postman_id": "4013ef3b-31d4-4f9e-b801-80f79346d45c",
+		"name": "WinTheCup",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23871236"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"catatarelli\",\r\n\"password\": \"catatarelli\",\r\n\"email\": \"catatarelli@hotmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url-render}}/user/register",
+					"host": [
+						"{{url-render}}"
+					],
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"catatarelli\",\r\n\"password\": \"catatarelli\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url-render}}/user/login",
+					"host": [
+						"{{url-render}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Predictions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url-render}}/predictions",
+					"host": [
+						"{{url-render}}"
+					],
+					"path": [
+						"predictions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "One prediction",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url-render}}/predictions/:id",
+					"host": [
+						"{{url-render}}"
+					],
+					"path": [
+						"predictions",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create prediction",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url-render}}/predictions/create",
+					"host": [
+						"{{url-render}}"
+					],
+					"path": [
+						"predictions",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete prediction",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url-render}}/predictions/delete/:id",
+					"host": [
+						"{{url-render}}"
+					],
+					"path": [
+						"predictions",
+						"delete",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit predition",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{url-render}}/predictions/update/:id",
+					"host": [
+						"{{url-render}}"
+					],
+					"path": [
+						"predictions",
+						"update",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit user",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "{{url-render}}/user/update",
+					"host": [
+						"{{url-render}}"
+					],
+					"path": [
+						"user",
+						"update"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url-render",
+			"value": "https://catalina-tarelli-back-final-project.onrender.com",
+			"type": "string"
+		}
+	]
 }
