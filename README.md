@@ -6,14 +6,14 @@
 
 # ENDPOINTS WITH TOKEN
 
-[GET] /predictions -> Responds with a list of predictions of the logged user.
+[GET] /predictions -> Responds with a list of predictions of the logged user limited by 5. It can receive a page number and a country to filter the response.
 
 [GET] /predictions/:id -> Responds with the prediction that corresponds with the received id.
-
-[GET] /predictions/filter/:filterprediction -> Responds with a list of predictions that correspond with the filter recieved.
 
 [POST] /predictions/create -> Allows to create a new prediction in the database.
 
 [DELETE] /predictions/delete/:id -> Deletes the prediction with the received id.
 
 [PATCH] /predictions/update/:id -> Updates the data of the prediction with the received id.
+
+[PATCH] /user/update -> Updates the data of the user.
